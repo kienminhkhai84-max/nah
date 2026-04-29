@@ -3,16 +3,21 @@
 # 1. Cập nhật hệ thống
 sudo apt update
 
-# 2. Cài đặt giao diện Ubuntu Desktop mặc định (GNOME)
-# Dùng bản minimal để tránh cài các app rác, giúp máy chạy nhanh hơn
+# 2. Cài đặt Ubuntu Desktop (GNOME) và XRDP
 sudo DEBIAN_FRONTEND=noninteractive apt install -y ubuntu-desktop-minimal xrdp
 
-# 3. Cấu hình để XRDP nhận diện giao diện GNOME của Ubuntu
-echo "gnome-session" > ~/.xsession
-sudo adduser xrdp ssl-cert
-sudo service xrdp restart
+# 3. Tạo user hieudz và đặt mật khẩu mặc định là '123'
+# (Anh có thể đổi số 123 ở dòng dưới nếu muốn mật khẩu khác)
+sudo useradd -m hieudz
+echo "hieudz:123" | sudo chpasswd
+sudo usermod -aG sudo hieudz
 
-# 4. Cài đặt ngrok bản mới nhất (Repository chính thức)
+# 4. Cấu hình giao diện GNOME cho hieudz
+echo "gnome-session" > /home/hieudz/.xsession
+sudo chown hieudz:hieudz /home/hieudz/.xsession
+sudo adduser xrdp ssl-cert
+
+# 5. Cài đặt ngrok bản mới nhất (Repository chính thức)
 curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
   | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
   && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
@@ -20,6 +25,8 @@ curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
   && sudo apt update \
   && sudo apt install ngrok -y
 
+sudo service xrdp restart
+
 echo "-----------------------------------"
-echo "Đã cài xong giao diện Ubuntu rồi ạ!"
+echo "Xong rồi đại ca ơi! User: hieudz | Pass: 123"
 echo "-----------------------------------"
